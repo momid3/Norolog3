@@ -1,4 +1,4 @@
-package com.momid
+package com.momid.parsing_rules
 
 import com.momid.parser.expression.*
 import com.momid.parser.not

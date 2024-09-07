@@ -1,17 +1,16 @@
 package com.momid
 
-import com.momid.parser.expression.*import com.momid.allowedName
-import com.momid.parameter
-import com.momid.parameters
-import com.momid.functionCall
-import com.momid.fullFunctionCall
-import com.momid.klass
-import com.momid.genericType
-import com.momid.type
-import com.momid.requiresType
-import com.momid.types
-import com.momid.numbers
-import com.momid.optionalTypes
+import com.momid.parser.expression.*import com.momid.parsing_rules.allowedName
+import com.momid.parsing_rules.parameter
+import com.momid.parsing_rules.parameters
+import com.momid.parsing_rules.functionCall
+import com.momid.parsing_rules.fullFunctionCall
+import com.momid.parsing_rules.klass
+import com.momid.parsing_rules.genericType
+import com.momid.parsing_rules.requiresType
+import com.momid.parsing_rules.types
+import com.momid.parsing_rules.numbers
+import com.momid.parsing_rules.optionalTypes
 class AllowedName(val expressionResult: ExpressionResult): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
 
 }
