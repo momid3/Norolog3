@@ -24,25 +24,7 @@ val fullFunctionCall = !"some" + insideOf('(', ')') {
 }["ooo"]
 
 @Type
-val klass = same(allowedName)
-
-@Type
-val genericType = cold { allowedName["name"] + !"<" + type["typeParameter"] + !">" }
-
-@Type
-val type: EachOfExpression = anyOf(genericType, klass)
-
-@Type
-val requiresType = (!"ooo")["ooo"] + require((!"sor"))["some"] + (!"ooo")["someooo"]
-
-@Type
-val types = some(require(type))
-
-@Type
 val numbers = some(require(com.momid.parser.expression.fNumber))
-
-@Type
-val optionalTypes = optional(allowedName)["identifier"] + space + type["type"]
 
 @Type
 val variable = same(allowedName)
@@ -63,19 +45,29 @@ val divide = !"/"
 val operator by lazy { anyOf(plus, minus, times, divide) }
 
 @Type
-val simpleExpression: RecurringSomeExpression by lazy {
-    some(one(spaces + anyOf(atomic, operator)["actualExpression"] + spaces))
+val operatorInExpression by lazy {
+    one(operator["operator"] + spaces)
+}
+
+@Type
+val swn by lazy { some0(condition { it.isWhitespace() && it != '\n' && it != '\r' }) }
+
+@Type
+val simpleExpression: ColdExpression by lazy {
+    cold {
+        some(one(swn + anyOf(atomic, operatorInExpression)["actualExpression"] + swn))
+    }
 }
 
 @Type
 val expressionWithParentheses: ColdExpression by lazy {
     cold {
-        !"(" + spaces + cExpression["inside"] + spaces + !")"
+        (!"(" + spaces + cExpression["inside"] + spaces + !")")
     }
 }
 
 @Type
-val cExpression by lazy { some(one(spaces + anyOf(simpleExpression, expressionWithParentheses, operator)["actualExpression"] + spaces)) }
+val cExpression by lazy { some(anyOf(simpleExpression, expressionWithParentheses)["actualExpression"]) }
 
 @Type
 val variables by lazy { some(one(spaces + parameter["parameter"] + spaces)) }

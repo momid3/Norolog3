@@ -5,4 +5,7 @@ class Parser() {
 
     val errors = HashMap<ExpressionResult, Expression?>()
     var isCurrentError: Boolean = false
+    val endIfConditions = ArrayList<Conditioning>()
 }
+
+class Conditioning(var end: Boolean)

@@ -228,3 +228,54 @@ fun same(expression: Expression): Expression {
         this.id = currentExpressionId
     }
 }
+
+fun someWithCondition(expression: Expression): CustomExpression {
+    return CustomExpression(
+        TypeInfo(expression, some(expression))
+    ) { tokens, startIndex, endIndex, thisExpression ->
+        val condition = Conditioning(false)
+        this.endIfConditions.add(condition)
+        val expressionResults = ArrayList<ExpressionResult>()
+        var numberOfRecurring = 0
+        var tokensEndIndex = startIndex
+        while (true) {
+            if (condition.end) {
+                break
+            }
+            val expressionResult = eval(expression, tokensEndIndex, tokens, endIndex) ?: break
+            tokensEndIndex = expressionResult.nextTokenIndex
+            if (tokensEndIndex <= endIndex) {
+                numberOfRecurring += 1
+                expressionResults.add(expressionResult)
+            } else {
+                break
+            }
+        }
+        this.endIfConditions.remove(condition)
+        if (numberOfRecurring > 0) {
+            return@CustomExpression MultiExpressionResult(expressionResult(expression, startIndex..tokensEndIndex).apply {
+                this.expression = thisExpression
+            }, expressionResults)
+        } else {
+            return@CustomExpression null
+        }
+    }
+}
+
+fun Expression.endIf(expression: Expression): CustomExpression {
+    val actual = this
+    return CustomExpression(
+        TypeInfo(this, this)
+    ) { tokens, startIndex, endIndex, thisExpression ->
+        val evaluation = eval(actual, startIndex, tokens, endIndex).apply {
+            if (this != null) {
+                this.expression = thisExpression
+            }
+        } ?: return@CustomExpression null
+        val endIfEvaluation = eval(not(expression), evaluation.nextTokenIndex, tokens, endIndex)
+        if (endIfEvaluation == null) {
+            this.endIfConditions.last().end = true
+        }
+        return@CustomExpression evaluation
+    }
+}

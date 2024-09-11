@@ -2,8 +2,6 @@ package com.momid.parser
 
 import com.momid.CExpression
 import com.momid.parseCExpression
-import com.momid.parseTypes
-import com.momid.parseVariables
 import com.momid.parser.expression.text
 import com.momid.parser.expression.then
 
@@ -34,7 +32,7 @@ fun writeExpressionParsing(cExpression: CExpression) {
                         }
                     }
                 }
-                it.isOperator.then {
+                it.isOperatorInExpression.then {
                     println("operator " + it.text)
                 }
             }
@@ -42,10 +40,6 @@ fun writeExpressionParsing(cExpression: CExpression) {
 
         it.isExpressionWithParentheses.then {
             writeExpressionParsing(it.inside)
-        }
-
-        it.isOperator.then {
-            println("operator " + it.text)
         }
     }
 }
