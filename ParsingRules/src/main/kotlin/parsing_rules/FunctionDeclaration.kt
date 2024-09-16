@@ -8,7 +8,13 @@ import com.momid.type.Type
 val functionArgument by lazy { allowedName["name"] + spaces + !":" + spaces + type["type"] }
 
 @Type
+val typeParameter by lazy { same(allowedName) }
+
+@Type
+val functionTypeParameters by lazy { !"<" + splitBy(one(spaces + typeParameter["typeParameter"] + spaces), ",") }
+
+@Type
 val functionDeclaration by lazy {
-    !"fun" + space + allowedName["functionName"] + !"(" + spaces + splitBy(functionArgument, ",")["arguments"] + spaces + !")" +
+    !"fun" + functionTypeParameters["functionTypeParameter"] + space + allowedName["functionName"] + !"(" + spaces + splitBy(functionArgument, ",")["arguments"] + spaces + !")" +
             spaces + !"{" + spaces + codeBlock["codeBlock"] + !"}"
 }

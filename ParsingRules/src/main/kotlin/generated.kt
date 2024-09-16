@@ -21,53 +21,21 @@ import com.momid.parsing_rules.variables
 import com.momid.parsing_rules.fNumber
 import com.momid.parsing_rules.variableAccess
 import com.momid.parsing_rules.arrayAccess
+import com.momid.parsing_rules.nextAccessItem
 import com.momid.parsing_rules.atomic
+import com.momid.parsing_rules.codeBlock
+import com.momid.parsing_rules.declaration
+import com.momid.parsing_rules.functionArgument
+import com.momid.parsing_rules.typeParameter
+import com.momid.parsing_rules.functionTypeParameters
+import com.momid.parsing_rules.functionDeclaration
+import com.momid.parsing_rules.programDeclaration
+import com.momid.parsing_rules.program
+import com.momid.parsing_rules.statement
 import com.momid.parsing_rules.klass
 import com.momid.parsing_rules.type
-class Atomic(val expressionResult: ExpressionResult): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
-val first: Anonymous15
-get() {
-return Anonymous15(expressionResult["first"])
-}
-val nextAccessItems: Anonymous17
-get() {
-return Anonymous17(expressionResult["nextAccessItems"])
-}
-}
-fun parseAtomic(tokens: String): Atomic? {
-val parsed = firstEval(atomic, 0, tokens.toList(), tokens.length)
-if (parsed != null) {
-return Atomic(parsed)
-} else {
-return null
-}
-}
-class Klass(val expressionResult: ExpressionResult): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
-
-}
-fun parseKlass(tokens: String): Klass? {
-val parsed = firstEval(klass, 0, tokens.toList(), tokens.length)
-if (parsed != null) {
-return Klass(parsed)
-} else {
-return null
-}
-}
-class Type(val expressionResult: ExpressionResult, val isKlass: Klass? = if (expressionResult.content.expression == klass) {
-Klass(expressionResult.content)
-} else {
-null
-}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
-
-}
-fun parseType(tokens: String): Type? {
-val parsed = firstEval(type, 0, tokens.toList(), tokens.length)
-if (parsed != null) {
-return Type(parsed)
-} else {
-return null
-}
-}
+import com.momid.parsing_rules.declaredVariable
+import com.momid.parsing_rules.variableDeclaration
 class AllowedName(val expressionResult: ExpressionResult): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
 
 }
@@ -79,17 +47,16 @@ return AllowedName(parsed)
 return null
 }
 }
-class Anonymous13(val expressionResult: ExpressionResult, val isAtomic: Atomic? = if (expressionResult.content.expression == atomic) {
-Atomic(expressionResult.content)
-} else {
-null
-},
-val isOperatorInExpression: OperatorInExpression? = if (expressionResult.content.expression == operatorInExpression) {
-OperatorInExpression(expressionResult.content)
-} else {
-null
-}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
+class DeclaredVariable(val expressionResult: ExpressionResult): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
 
+}
+fun parseDeclaredVariable(tokens: String): DeclaredVariable? {
+val parsed = firstEval(declaredVariable, 0, tokens.toList(), tokens.length)
+if (parsed != null) {
+return DeclaredVariable(parsed)
+} else {
+return null
+}
 }
 class Parameter(val expressionResult: ExpressionResult): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
 val variableName: AllowedName
@@ -105,18 +72,6 @@ return Parameter(parsed)
 return null
 }
 }
-class Anonymous12(val expressionResult: ExpressionResult, val isAtomic: Atomic? = if (expressionResult.content.expression == atomic) {
-Atomic(expressionResult.content)
-} else {
-null
-},
-val isOperatorInExpression: OperatorInExpression? = if (expressionResult.content.expression == operatorInExpression) {
-OperatorInExpression(expressionResult.content)
-} else {
-null
-}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
-
-}
 class Parameters(val expressionResult: ExpressionResult, val items: List<Parameter> = expressionResult.asMulti().map {
 Parameter(it)
 }): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex), List<Parameter> by items {
@@ -130,46 +85,17 @@ return Parameters(parsed)
 return null
 }
 }
-class Anonymous15(val expressionResult: ExpressionResult, val isVariable: Variable? = if (expressionResult.content.expression == variable) {
-Variable(expressionResult.content)
-} else {
-null
-},
-val isFNumber: FNumber? = if (expressionResult.content.expression == fNumber) {
-FNumber(expressionResult.content)
-} else {
-null
-}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
-
-}
 class Anonymous2(val expressionResult: ExpressionResult): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
 val inside: Parameters
 get() {
 return Parameters(expressionResult["inside"])
 }
 }
-class Anonymous19(val expressionResult: ExpressionResult, val isVariableAccess: VariableAccess? = if (expressionResult.content.expression == variableAccess) {
-VariableAccess(expressionResult.content)
-} else {
-null
-},
-val isArrayAccess: ArrayAccess? = if (expressionResult.content.expression == arrayAccess) {
-ArrayAccess(expressionResult.content)
-} else {
-null
-}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
-
-}
 class Anonymous0(val expressionResult: ExpressionResult): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
 val inside: Parameters
 get() {
 return Parameters(expressionResult["inside"])
 }
-}
-class Anonymous17(val expressionResult: ExpressionResult, val items: List<Anonymous19> = expressionResult.asMulti().map {
-Anonymous19(it)
-}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex), List<Anonymous19> by items {
-
 }
 class FunctionCall(val expressionResult: ExpressionResult): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
 val functionName: AllowedName
@@ -418,7 +344,7 @@ return ExpressionWithParentheses(parsed)
 return null
 }
 }
-class Anonymous20(val expressionResult: ExpressionResult, val isSimpleExpression: SimpleExpression? = if (expressionResult.content.expression == simpleExpression) {
+class Anonymous19(val expressionResult: ExpressionResult, val isSimpleExpression: SimpleExpression? = if (expressionResult.content.expression == simpleExpression) {
 SimpleExpression(expressionResult.content)
 } else {
 null
@@ -430,9 +356,9 @@ null
 }): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
 
 }
-class CExpression(val expressionResult: ExpressionResult, val items: List<Anonymous20> = expressionResult.asMulti().map {
-Anonymous20(it)
-}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex), List<Anonymous20> by items {
+class CExpression(val expressionResult: ExpressionResult, val items: List<Anonymous19> = expressionResult.asMulti().map {
+Anonymous19(it)
+}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex), List<Anonymous19> by items {
 
 }
 fun parseCExpression(tokens: String): CExpression? {
@@ -443,15 +369,15 @@ return CExpression(parsed)
 return null
 }
 }
-class Anonymous22(val expressionResult: ExpressionResult): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
+class Anonymous21(val expressionResult: ExpressionResult): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
 val variableName: AllowedName
 get() {
 return AllowedName(expressionResult["variableName"])
 }
 }
-class Variables(val expressionResult: ExpressionResult, val items: List<Anonymous22> = expressionResult.asMulti().map {
-Anonymous22(it)
-}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex), List<Anonymous22> by items {
+class Variables(val expressionResult: ExpressionResult, val items: List<Anonymous21> = expressionResult.asMulti().map {
+Anonymous21(it)
+}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex), List<Anonymous21> by items {
 
 }
 fun parseVariables(tokens: String): Variables? {
@@ -500,4 +426,276 @@ return ArrayAccess(parsed)
 } else {
 return null
 }
+}
+class NextAccessItem(val expressionResult: ExpressionResult, val isVariableAccess: VariableAccess? = if (expressionResult.content.expression == variableAccess) {
+VariableAccess(expressionResult.content)
+} else {
+null
+},
+val isArrayAccess: ArrayAccess? = if (expressionResult.content.expression == arrayAccess) {
+ArrayAccess(expressionResult.content)
+} else {
+null
+}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
+
+}
+fun parseNextAccessItem(tokens: String): NextAccessItem? {
+val parsed = firstEval(nextAccessItem, 0, tokens.toList(), tokens.length)
+if (parsed != null) {
+return NextAccessItem(parsed)
+} else {
+return null
+}
+}
+class Atomic(val expressionResult: ExpressionResult): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
+val first: Anonymous15
+get() {
+return Anonymous15(expressionResult["first"])
+}
+val nextAccessItems: Anonymous17
+get() {
+return Anonymous17(expressionResult["nextAccessItems"])
+}
+}
+fun parseAtomic(tokens: String): Atomic? {
+val parsed = firstEval(atomic, 0, tokens.toList(), tokens.length)
+if (parsed != null) {
+return Atomic(parsed)
+} else {
+return null
+}
+}
+class VariableDeclaration(val expressionResult: ExpressionResult): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
+val variableName: AllowedName
+get() {
+return AllowedName(expressionResult["variableName"])
+}
+val assignedValue: CExpression
+get() {
+return CExpression(expressionResult["assignedValue"])
+}
+}
+fun parseVariableDeclaration(tokens: String): VariableDeclaration? {
+val parsed = firstEval(variableDeclaration, 0, tokens.toList(), tokens.length)
+if (parsed != null) {
+return VariableDeclaration(parsed)
+} else {
+return null
+}
+}
+class Statement(val expressionResult: ExpressionResult, val isVariableDeclaration: VariableDeclaration? = if (expressionResult.content.expression == variableDeclaration) {
+VariableDeclaration(expressionResult.content)
+} else {
+null
+}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
+
+}
+fun parseStatement(tokens: String): Statement? {
+val parsed = firstEval(statement, 0, tokens.toList(), tokens.length)
+if (parsed != null) {
+return Statement(parsed)
+} else {
+return null
+}
+}
+class Anonymous22(val expressionResult: ExpressionResult, val isVariableDeclaration: VariableDeclaration? = if (expressionResult.content.expression == variableDeclaration) {
+VariableDeclaration(expressionResult.content)
+} else {
+null
+}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
+
+}
+class CodeBlock(val expressionResult: ExpressionResult, val items: List<Anonymous22> = expressionResult.asMulti().map {
+Anonymous22(it)
+}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex), List<Anonymous22> by items {
+
+}
+fun parseCodeBlock(tokens: String): CodeBlock? {
+val parsed = firstEval(codeBlock, 0, tokens.toList(), tokens.length)
+if (parsed != null) {
+return CodeBlock(parsed)
+} else {
+return null
+}
+}
+class TypeParameter(val expressionResult: ExpressionResult): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
+
+}
+fun parseTypeParameter(tokens: String): TypeParameter? {
+val parsed = firstEval(typeParameter, 0, tokens.toList(), tokens.length)
+if (parsed != null) {
+return TypeParameter(parsed)
+} else {
+return null
+}
+}
+class FunctionTypeParameters(val expressionResult: ExpressionResult): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
+
+}
+fun parseFunctionTypeParameters(tokens: String): FunctionTypeParameters? {
+val parsed = firstEval(functionTypeParameters, 0, tokens.toList(), tokens.length)
+if (parsed != null) {
+return FunctionTypeParameters(parsed)
+} else {
+return null
+}
+}
+class FunctionDeclaration(val expressionResult: ExpressionResult): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
+val functionTypeParameter: FunctionTypeParameters
+get() {
+return FunctionTypeParameters(expressionResult["functionTypeParameter"])
+}
+val functionName: AllowedName
+get() {
+return AllowedName(expressionResult["functionName"])
+}
+val arguments: Anonymous23
+get() {
+return Anonymous23(expressionResult["arguments"])
+}
+val codeBlock: CodeBlock
+get() {
+return CodeBlock(expressionResult["codeBlock"])
+}
+}
+fun parseFunctionDeclaration(tokens: String): FunctionDeclaration? {
+val parsed = firstEval(functionDeclaration, 0, tokens.toList(), tokens.length)
+if (parsed != null) {
+return FunctionDeclaration(parsed)
+} else {
+return null
+}
+}
+class FunctionArgument(val expressionResult: ExpressionResult): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
+val name: AllowedName
+get() {
+return AllowedName(expressionResult["name"])
+}
+val type: Type
+get() {
+return Type(expressionResult["type"])
+}
+}
+fun parseFunctionArgument(tokens: String): FunctionArgument? {
+val parsed = firstEval(functionArgument, 0, tokens.toList(), tokens.length)
+if (parsed != null) {
+return FunctionArgument(parsed)
+} else {
+return null
+}
+}
+class Klass(val expressionResult: ExpressionResult): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
+
+}
+fun parseKlass(tokens: String): Klass? {
+val parsed = firstEval(klass, 0, tokens.toList(), tokens.length)
+if (parsed != null) {
+return Klass(parsed)
+} else {
+return null
+}
+}
+class Type(val expressionResult: ExpressionResult, val isKlass: Klass? = if (expressionResult.content.expression == klass) {
+Klass(expressionResult.content)
+} else {
+null
+}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
+
+}
+fun parseType(tokens: String): Type? {
+val parsed = firstEval(type, 0, tokens.toList(), tokens.length)
+if (parsed != null) {
+return Type(parsed)
+} else {
+return null
+}
+}
+class Anonymous23(val expressionResult: ExpressionResult, val items: List<FunctionArgument> = expressionResult.asMulti().map {
+FunctionArgument(it)
+}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex), List<FunctionArgument> by items {
+
+}
+class Declaration(val expressionResult: ExpressionResult, val isFunctionDeclaration: FunctionDeclaration? = if (expressionResult.content.expression == functionDeclaration) {
+FunctionDeclaration(expressionResult.content)
+} else {
+null
+}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
+
+}
+fun parseDeclaration(tokens: String): Declaration? {
+val parsed = firstEval(declaration, 0, tokens.toList(), tokens.length)
+if (parsed != null) {
+return Declaration(parsed)
+} else {
+return null
+}
+}
+class ProgramDeclaration(val expressionResult: ExpressionResult, val isFunctionDeclaration: FunctionDeclaration? = if (expressionResult.content.expression == functionDeclaration) {
+FunctionDeclaration(expressionResult.content)
+} else {
+null
+}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
+
+}
+fun parseProgramDeclaration(tokens: String): ProgramDeclaration? {
+val parsed = firstEval(programDeclaration, 0, tokens.toList(), tokens.length)
+if (parsed != null) {
+return ProgramDeclaration(parsed)
+} else {
+return null
+}
+}
+class Program(val expressionResult: ExpressionResult, val items: List<ProgramDeclaration> = expressionResult.asMulti().map {
+ProgramDeclaration(it)
+}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex), List<ProgramDeclaration> by items {
+
+}
+fun parseProgram(tokens: String): Program? {
+val parsed = firstEval(program, 0, tokens.toList(), tokens.length)
+if (parsed != null) {
+return Program(parsed)
+} else {
+return null
+}
+}
+class Anonymous13(val expressionResult: ExpressionResult, val isAtomic: Atomic? = if (expressionResult.content.expression == atomic) {
+Atomic(expressionResult.content)
+} else {
+null
+},
+val isOperatorInExpression: OperatorInExpression? = if (expressionResult.content.expression == operatorInExpression) {
+OperatorInExpression(expressionResult.content)
+} else {
+null
+}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
+
+}
+class Anonymous12(val expressionResult: ExpressionResult, val isAtomic: Atomic? = if (expressionResult.content.expression == atomic) {
+Atomic(expressionResult.content)
+} else {
+null
+},
+val isOperatorInExpression: OperatorInExpression? = if (expressionResult.content.expression == operatorInExpression) {
+OperatorInExpression(expressionResult.content)
+} else {
+null
+}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
+
+}
+class Anonymous15(val expressionResult: ExpressionResult, val isVariable: Variable? = if (expressionResult.content.expression == variable) {
+Variable(expressionResult.content)
+} else {
+null
+},
+val isFNumber: FNumber? = if (expressionResult.content.expression == fNumber) {
+FNumber(expressionResult.content)
+} else {
+null
+}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex) {
+
+}
+class Anonymous17(val expressionResult: ExpressionResult, val items: List<NextAccessItem> = expressionResult.asMulti().map {
+NextAccessItem(it)
+}): ExpressionResult(expressionResult.parser, expressionResult.expression, expressionResult.range, expressionResult.nextTokenIndex), List<NextAccessItem> by items {
+
 }

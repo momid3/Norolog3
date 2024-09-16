@@ -82,8 +82,13 @@ val variableAccess by lazy { !"." + variable["variable"] }
 val arrayAccess by lazy { !"[" + cExpression["insideArrayExpression"] + !"]" }
 
 @Type
+val nextAccessItem by lazy {
+    anyOf(variableAccess, arrayAccess)
+}
+
+@Type
 val atomic by lazy {
     cold {
-        anyOf(variable, fNumber)["first"] + some0(anyOf(variableAccess, arrayAccess))["nextAccessItems"]
+        anyOf(variable, fNumber)["first"] + some0(nextAccessItem)["nextAccessItems"]
     }
 }

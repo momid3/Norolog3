@@ -8,4 +8,7 @@ import com.momid.parser.expression.get
 import com.momid.type.Type
 
 @Type
-val program by lazy { some0(one(spaces + declaration["declaration"] + spaces)) }
+val programDeclaration by lazy { one(spaces + declaration["declaration"] + spaces) }
+
+@Type
+val program by lazy { some0(programDeclaration) }
